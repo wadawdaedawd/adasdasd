@@ -1,1285 +1,446 @@
-{\rtf1\ansi\ansicpg1251\cocoartf2821
-\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fmodern\fcharset0 Courier;\f1\fmodern\fcharset0 Courier-Oblique;\f2\fmodern\fcharset0 Courier-Bold;
+
+
+
+
+-- Settings
+local Settings = {
+    Box_Color = Color3.fromRGB(255, 0, 0),
+    Box_Thickness = 2,
+    Team_Check = false,
+    Team_Color = false,
+    Autothickness = true
 }
-{\colortbl;\red255\green255\blue255;\red194\green203\blue241;\red89\green92\blue115;\red23\green22\blue34;
-\red190\green144\blue245;\red121\green213\blue230;\red133\green221\blue203;\red247\green163\blue116;\red247\green220\blue160;
-\red119\green162\blue248;\red152\green224\blue144;}
-{\*\expandedcolortbl;;\cssrgb\c80392\c83922\c95686;\cssrgb\c42353\c43922\c52549;\cssrgb\c11765\c11765\c18039;
-\cssrgb\c79608\c65098\c96863;\cssrgb\c53725\c86275\c92157;\cssrgb\c58039\c88627\c83529;\cssrgb\c98039\c70196\c52941;\cssrgb\c97647\c88627\c68627;
-\cssrgb\c53725\c70588\c98039;\cssrgb\c65098\c89020\c63137;}
-\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
-\deftab720
-\pard\pardeftab720\partightenfactor0
 
-\f0\fs28 \cf2 \expnd0\expndtw0\kerning0
-\outl0\strokewidth0 \strokec2 \
-\
-\
-\
-\pard\pardeftab720\partightenfactor0
+--Locals
+local Space = game:GetService("Workspace")
+local Player = game:GetService("Players").LocalPlayer
+local Camera = Space.CurrentCamera
 
-\f1\i \cf3 \cb4 \strokec3 -- Settings
-\f0\i0 \cf2 \cb1 \strokec2 \
-\pard\pardeftab720\partightenfactor0
+-- Locals
+local function NewLine(color, thickness)
+    local line = Drawing.new("Line")
+    line.Visible = false
+    line.From = Vector2.new(0, 0)
+    line.To = Vector2.new(0, 0)
+    line.Color = color
+    line.Thickness = thickness
+    line.Transparency = 1
+    return line
+end
 
-\f2\b \cf5 \cb4 \strokec5 local
-\f0\b0 \cf2 \strokec2  Settings \cf6 \strokec6 =\cf2 \strokec2  \{\cb1 \
-\pard\pardeftab720\partightenfactor0
-\cf2 \cb4     Box_Color \cf6 \strokec6 =\cf2 \strokec2  \cf7 \strokec7 Color3.fromRGB\cf2 \strokec2 (\cf8 \strokec8 255\cf2 \strokec2 , \cf8 \strokec8 0\cf2 \strokec2 , \cf8 \strokec8 0\cf2 \strokec2 ),\cb1 \
-\cb4     Box_Thickness \cf6 \strokec6 =\cf2 \strokec2  \cf8 \strokec8 2\cf2 \strokec2 ,\cb1 \
-\cb4     Team_Check \cf6 \strokec6 =\cf2 \strokec2  \cf7 \strokec7 false\cf2 \strokec2 ,\cb1 \
-\cb4     Team_Color \cf6 \strokec6 =\cf2 \strokec2  \cf7 \strokec7 false\cf2 \strokec2 ,\cb1 \
-\cb4     Autothickness \cf6 \strokec6 =\cf2 \strokec2  \cf7 \strokec7 true\cf2 \cb1 \strokec2 \
-\cb4 \}\cb1 \
-\
-\pard\pardeftab720\partightenfactor0
+local function Vis(lib, state)
+    for i, v in pairs(lib) do
+        v.Visible = state
+    end
+end
 
-\f1\i \cf3 \cb4 \strokec3 --Locals
-\f0\i0 \cf2 \cb1 \strokec2 \
-\pard\pardeftab720\partightenfactor0
+local function Colorize(lib, color)
+    for i, v in pairs(lib) do
+        v.Color = color
+    end
+end
 
-\f2\b \cf5 \cb4 \strokec5 local
-\f0\b0 \cf2 \strokec2  Space \cf6 \strokec6 =\cf2 \strokec2  \cf9 \strokec9 game
-\f1\i \cf10 \strokec10 :GetService
-\f0\i0 \cf2 \strokec2 (\cf11 \strokec11 "Workspace"\cf2 \strokec2 )\cb1 \
+local Black = Color3.fromRGB(0, 0, 0)
 
-\f2\b \cf5 \cb4 \strokec5 local
-\f0\b0 \cf2 \strokec2  \cf9 \strokec9 Player\cf2 \strokec2  \cf6 \strokec6 =\cf2 \strokec2  \cf9 \strokec9 game
-\f1\i \cf10 \strokec10 :GetService
-\f0\i0 \cf2 \strokec2 (\cf11 \strokec11 "Players"\cf2 \strokec2 ).\cf9 \strokec9 LocalPlayer\cf2 \cb1 \strokec2 \
+local function Rainbow(lib, delay)
+    for hue = 0, 1, 1/30 do
+        local color = Color3.fromHSV(hue, 0.6, 1)
+        Colorize(lib, color)
+        wait(delay)
+    end
+    Rainbow(lib)
+end
+--Main Draw Function
+local function Main(plr)
+    repeat wait() until plr.Character ~= nil and plr.Character:FindFirstChild("Humanoid") ~= nil
+    local R15
+    if plr.Character.Humanoid.RigType == Enum.HumanoidRigType.R15 then
+        R15 = true
+    else 
+        R15 = false
+    end
+    local Library = {
+        TL1 = NewLine(Settings.Box_Color, Settings.Box_Thickness),
+        TL2 = NewLine(Settings.Box_Color, Settings.Box_Thickness),
 
-\f2\b \cf5 \cb4 \strokec5 local
-\f0\b0 \cf2 \strokec2  Camera \cf6 \strokec6 =\cf2 \strokec2  Space.CurrentCamera\cb1 \
-\
-\pard\pardeftab720\partightenfactor0
+        TR1 = NewLine(Settings.Box_Color, Settings.Box_Thickness),
+        TR2 = NewLine(Settings.Box_Color, Settings.Box_Thickness),
 
-\f1\i \cf3 \cb4 \strokec3 -- Locals
-\f0\i0 \cf2 \cb1 \strokec2 \
-\pard\pardeftab720\partightenfactor0
+        BL1 = NewLine(Settings.Box_Color, Settings.Box_Thickness),
+        BL2 = NewLine(Settings.Box_Color, Settings.Box_Thickness),
 
-\f2\b \cf5 \cb4 \strokec5 local
-\f0\b0 \cf2 \strokec2  
-\f2\b \cf5 \strokec5 function
-\f0\b0 \cf2 \strokec2  NewLine(color, thickness)\cb1 \
-\pard\pardeftab720\partightenfactor0
-\cf2 \cb4     
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  line \cf6 \strokec6 =\cf2 \strokec2  Drawing.new(\cf11 \strokec11 "Line"\cf2 \strokec2 )\cb1 \
-\cb4     line.Visible \cf6 \strokec6 =\cf2 \strokec2  \cf7 \strokec7 false\cf2 \cb1 \strokec2 \
-\cb4     line.From \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(\cf8 \strokec8 0\cf2 \strokec2 , \cf8 \strokec8 0\cf2 \strokec2 )\cb1 \
-\cb4     line.To \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(\cf8 \strokec8 0\cf2 \strokec2 , \cf8 \strokec8 0\cf2 \strokec2 )\cb1 \
-\cb4     line.Color \cf6 \strokec6 =\cf2 \strokec2  color\cb1 \
-\cb4     line.Thickness \cf6 \strokec6 =\cf2 \strokec2  thickness\cb1 \
-\cb4     line.Transparency \cf6 \strokec6 =\cf2 \strokec2  \cf8 \strokec8 1\cf2 \cb1 \strokec2 \
-\cb4     
-\f2\b \cf5 \strokec5 return
-\f0\b0 \cf2 \strokec2  line\cb1 \
-\pard\pardeftab720\partightenfactor0
+        BR1 = NewLine(Settings.Box_Color, Settings.Box_Thickness),
+        BR2 = NewLine(Settings.Box_Color, Settings.Box_Thickness)
+    }
+    coroutine.wrap(Rainbow)(Library, 0.15)
+    local oripart = Instance.new("Part")
+    oripart.Parent = Space
+    oripart.Transparency = 1
+    oripart.CanCollide = false
+    oripart.Size = Vector3.new(1, 1, 1)
+    oripart.Position = Vector3.new(0, 0, 0)
+    --Updater Loop
+    local function Updater()
+        local c 
+        c = game:GetService("RunService").RenderStepped:Connect(function()
+            if plr.Character ~= nil and plr.Character:FindFirstChild("Humanoid") ~= nil and plr.Character:FindFirstChild("HumanoidRootPart") ~= nil and plr.Character.Humanoid.Health > 0 and plr.Character:FindFirstChild("Head") ~= nil then
+                local Hum = plr.Character
+                local HumPos, vis = Camera:WorldToViewportPoint(Hum.HumanoidRootPart.Position)
+                if vis then
+                    oripart.Size = Vector3.new(Hum.HumanoidRootPart.Size.X, Hum.HumanoidRootPart.Size.Y*1.5, Hum.HumanoidRootPart.Size.Z)
+                    oripart.CFrame = CFrame.new(Hum.HumanoidRootPart.CFrame.Position, Camera.CFrame.Position)
+                    local SizeX = oripart.Size.X
+                    local SizeY = oripart.Size.Y
+                    local TL = Camera:WorldToViewportPoint((oripart.CFrame * CFrame.new(SizeX, SizeY, 0)).p)
+                    local TR = Camera:WorldToViewportPoint((oripart.CFrame * CFrame.new(-SizeX, SizeY, 0)).p)
+                    local BL = Camera:WorldToViewportPoint((oripart.CFrame * CFrame.new(SizeX, -SizeY, 0)).p)
+                    local BR = Camera:WorldToViewportPoint((oripart.CFrame * CFrame.new(-SizeX, -SizeY, 0)).p)
 
-\f2\b \cf5 \cb4 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\
+                    if Settings.Team_Check then
+                        if plr.TeamColor == Player.TeamColor then
+                            Colorize(Library, Color3.fromRGB(0, 255, 0))
+                        else 
+                            Colorize(Library, Color3.fromRGB(255, 0, 0))
+                        end
+                    end
 
-\f2\b \cf5 \cb4 \strokec5 local
-\f0\b0 \cf2 \strokec2  
-\f2\b \cf5 \strokec5 function
-\f0\b0 \cf2 \strokec2  Vis(lib, state)\cb1 \
-\pard\pardeftab720\partightenfactor0
-\cf2 \cb4     
-\f2\b \cf5 \strokec5 for
-\f0\b0 \cf2 \strokec2  i, v 
-\f2\b \cf5 \strokec5 in
-\f0\b0 \cf2 \strokec2  \cf7 \strokec7 pairs\cf2 \strokec2 (lib) 
-\f2\b \cf5 \strokec5 do
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4         v.Visible \cf6 \strokec6 =\cf2 \strokec2  state\cb1 \
-\cb4     
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\pard\pardeftab720\partightenfactor0
+                    if Settings.Team_Color then
+                        Colorize(Library, plr.TeamColor.Color)
+                    end
 
-\f2\b \cf5 \cb4 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\
+                    local ratio = (Camera.CFrame.p - Hum.HumanoidRootPart.Position).magnitude
+                    local offset = math.clamp(1/ratio*750, 2, 300)
 
-\f2\b \cf5 \cb4 \strokec5 local
-\f0\b0 \cf2 \strokec2  
-\f2\b \cf5 \strokec5 function
-\f0\b0 \cf2 \strokec2  Colorize(lib, color)\cb1 \
-\pard\pardeftab720\partightenfactor0
-\cf2 \cb4     
-\f2\b \cf5 \strokec5 for
-\f0\b0 \cf2 \strokec2  i, v 
-\f2\b \cf5 \strokec5 in
-\f0\b0 \cf2 \strokec2  \cf7 \strokec7 pairs\cf2 \strokec2 (lib) 
-\f2\b \cf5 \strokec5 do
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4         v.Color \cf6 \strokec6 =\cf2 \strokec2  color\cb1 \
-\cb4     
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\pard\pardeftab720\partightenfactor0
+                    Library.TL1.From = Vector2.new(TL.X, TL.Y)
+                    Library.TL1.To = Vector2.new(TL.X + offset, TL.Y)
+                    Library.TL2.From = Vector2.new(TL.X, TL.Y)
+                    Library.TL2.To = Vector2.new(TL.X, TL.Y + offset)
 
-\f2\b \cf5 \cb4 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\
+                    Library.TR1.From = Vector2.new(TR.X, TR.Y)
+                    Library.TR1.To = Vector2.new(TR.X - offset, TR.Y)
+                    Library.TR2.From = Vector2.new(TR.X, TR.Y)
+                    Library.TR2.To = Vector2.new(TR.X, TR.Y + offset)
 
-\f2\b \cf5 \cb4 \strokec5 local
-\f0\b0 \cf2 \strokec2  Black \cf6 \strokec6 =\cf2 \strokec2  \cf7 \strokec7 Color3.fromRGB\cf2 \strokec2 (\cf8 \strokec8 0\cf2 \strokec2 , \cf8 \strokec8 0\cf2 \strokec2 , \cf8 \strokec8 0\cf2 \strokec2 )\cb1 \
-\
+                    Library.BL1.From = Vector2.new(BL.X, BL.Y)
+                    Library.BL1.To = Vector2.new(BL.X + offset, BL.Y)
+                    Library.BL2.From = Vector2.new(BL.X, BL.Y)
+                    Library.BL2.To = Vector2.new(BL.X, BL.Y - offset)
 
-\f2\b \cf5 \cb4 \strokec5 local
-\f0\b0 \cf2 \strokec2  
-\f2\b \cf5 \strokec5 function
-\f0\b0 \cf2 \strokec2  Rainbow(lib, \cf7 \strokec7 delay\cf2 \strokec2 )\cb1 \
-\pard\pardeftab720\partightenfactor0
-\cf2 \cb4     
-\f2\b \cf5 \strokec5 for
-\f0\b0 \cf2 \strokec2  hue \cf6 \strokec6 =\cf2 \strokec2  \cf8 \strokec8 0\cf2 \strokec2 , \cf8 \strokec8 1\cf2 \strokec2 , \cf8 \strokec8 1\cf6 \strokec6 /\cf8 \strokec8 30\cf2 \strokec2  
-\f2\b \cf5 \strokec5 do
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4         
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  color \cf6 \strokec6 =\cf2 \strokec2  Color3.fromHSV(hue, \cf8 \strokec8 0.6\cf2 \strokec2 , \cf8 \strokec8 1\cf2 \strokec2 )\cb1 \
-\cb4         Colorize(lib, color)\cb1 \
-\cb4         \cf7 \strokec7 wait\cf2 \strokec2 (\cf7 \strokec7 delay\cf2 \strokec2 )\cb1 \
-\cb4     
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4     Rainbow(lib)\cb1 \
-\pard\pardeftab720\partightenfactor0
+                    Library.BR1.From = Vector2.new(BR.X, BR.Y)
+                    Library.BR1.To = Vector2.new(BR.X - offset, BR.Y)
+                    Library.BR2.From = Vector2.new(BR.X, BR.Y)
+                    Library.BR2.To = Vector2.new(BR.X, BR.Y - offset)
 
-\f2\b \cf5 \cb4 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\pard\pardeftab720\partightenfactor0
+                    Vis(Library, true)
 
-\f1\i \cf3 \cb4 \strokec3 --Main Draw Function
-\f0\i0 \cf2 \cb1 \strokec2 \
-\pard\pardeftab720\partightenfactor0
+                    if Settings.Autothickness then
+                        local distance = (Player.Character.HumanoidRootPart.Position - oripart.Position).magnitude
+                        local value = math.clamp(1/distance*100, 1, 4) --0.1 is min thickness, 6 is max
+                        for u, x in pairs(Library) do
+                            x.Thickness = value
+                        end
+                    else 
+                        for u, x in pairs(Library) do
+                            x.Thickness = Settings.Box_Thickness
+                        end
+                    end
+                else 
+                    Vis(Library, false)
+                end
+            else 
+                Vis(Library, false)
+                if game:GetService("Players"):FindFirstChild(plr.Name) == nil then
+                    for i, v in pairs(Library) do
+                        v:Remove()
+                        oripart:Destroy()
+                    end
+                    c:Disconnect()
+                end
+            end
+        end)
+    end
+    coroutine.wrap(Updater)()
+end
 
-\f2\b \cf5 \cb4 \strokec5 local
-\f0\b0 \cf2 \strokec2  
-\f2\b \cf5 \strokec5 function
-\f0\b0 \cf2 \strokec2  Main(plr)\cb1 \
-\pard\pardeftab720\partightenfactor0
-\cf2 \cb4     
-\f2\b \cf5 \strokec5 repeat
-\f0\b0 \cf2 \strokec2  \cf7 \strokec7 wait\cf2 \strokec2 () 
-\f2\b \cf5 \strokec5 until
-\f0\b0 \cf2 \strokec2  plr.Character \cf6 \strokec6 ~=\cf2 \strokec2  
-\f1\i \cf7 \strokec7 nil
-\f0\i0 \cf2 \strokec2  
-\f2\b \cf5 \strokec5 and
-\f0\b0 \cf2 \strokec2  plr.Character
-\f1\i \cf10 \strokec10 :FindFirstChild
-\f0\i0 \cf2 \strokec2 (\cf11 \strokec11 "Humanoid"\cf2 \strokec2 ) \cf6 \strokec6 ~=\cf2 \strokec2  
-\f1\i \cf7 \strokec7 nil
-\f0\i0 \cf2 \cb1 \strokec2 \
-\cb4     
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  R15\cb1 \
-\cb4     
-\f2\b \cf5 \strokec5 if
-\f0\b0 \cf2 \strokec2  plr.Character.Humanoid.RigType \cf6 \strokec6 ==\cf2 \strokec2  Enum.HumanoidRigType.R15 
-\f2\b \cf5 \strokec5 then
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4         R15 \cf6 \strokec6 =\cf2 \strokec2  \cf7 \strokec7 true\cf2 \cb1 \strokec2 \
-\cb4     
-\f2\b \cf5 \strokec5 else
-\f0\b0 \cf2 \strokec2  \cb1 \
-\cb4         R15 \cf6 \strokec6 =\cf2 \strokec2  \cf7 \strokec7 false\cf2 \cb1 \strokec2 \
-\cb4     
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4     
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  Library \cf6 \strokec6 =\cf2 \strokec2  \{\cb1 \
-\cb4         TL1 \cf6 \strokec6 =\cf2 \strokec2  NewLine(Settings.Box_Color, Settings.Box_Thickness),\cb1 \
-\cb4         TL2 \cf6 \strokec6 =\cf2 \strokec2  NewLine(Settings.Box_Color, Settings.Box_Thickness),\cb1 \
-\
-\cb4         TR1 \cf6 \strokec6 =\cf2 \strokec2  NewLine(Settings.Box_Color, Settings.Box_Thickness),\cb1 \
-\cb4         TR2 \cf6 \strokec6 =\cf2 \strokec2  NewLine(Settings.Box_Color, Settings.Box_Thickness),\cb1 \
-\
-\cb4         BL1 \cf6 \strokec6 =\cf2 \strokec2  NewLine(Settings.Box_Color, Settings.Box_Thickness),\cb1 \
-\cb4         BL2 \cf6 \strokec6 =\cf2 \strokec2  NewLine(Settings.Box_Color, Settings.Box_Thickness),\cb1 \
-\
-\cb4         BR1 \cf6 \strokec6 =\cf2 \strokec2  NewLine(Settings.Box_Color, Settings.Box_Thickness),\cb1 \
-\cb4         BR2 \cf6 \strokec6 =\cf2 \strokec2  NewLine(Settings.Box_Color, Settings.Box_Thickness)\cb1 \
-\cb4     \}\cb1 \
-\cb4     coroutine.wrap(Rainbow)(Library, \cf8 \strokec8 0.15\cf2 \strokec2 )\cb1 \
-\cb4     
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  oripart \cf6 \strokec6 =\cf2 \strokec2  \cf7 \strokec7 Instance.new\cf2 \strokec2 (\cf11 \strokec11 "Part"\cf2 \strokec2 )\cb1 \
-\cb4     oripart.Parent \cf6 \strokec6 =\cf2 \strokec2  Space\cb1 \
-\cb4     oripart.Transparency \cf6 \strokec6 =\cf2 \strokec2  \cf8 \strokec8 1\cf2 \cb1 \strokec2 \
-\cb4     oripart.CanCollide \cf6 \strokec6 =\cf2 \strokec2  \cf7 \strokec7 false\cf2 \cb1 \strokec2 \
-\cb4     oripart.Size \cf6 \strokec6 =\cf2 \strokec2  \cf7 \strokec7 Vector3.new\cf2 \strokec2 (\cf8 \strokec8 1\cf2 \strokec2 , \cf8 \strokec8 1\cf2 \strokec2 , \cf8 \strokec8 1\cf2 \strokec2 )\cb1 \
-\cb4     oripart.Position \cf6 \strokec6 =\cf2 \strokec2  \cf7 \strokec7 Vector3.new\cf2 \strokec2 (\cf8 \strokec8 0\cf2 \strokec2 , \cf8 \strokec8 0\cf2 \strokec2 , \cf8 \strokec8 0\cf2 \strokec2 )\cb1 \
-\cb4     
-\f1\i \cf3 \strokec3 --Updater Loop
-\f0\i0 \cf2 \cb1 \strokec2 \
-\cb4     
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  
-\f2\b \cf5 \strokec5 function
-\f0\b0 \cf2 \strokec2  Updater()\cb1 \
-\cb4         
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  c \cb1 \
-\cb4         c \cf6 \strokec6 =\cf2 \strokec2  \cf9 \strokec9 game
-\f1\i \cf10 \strokec10 :GetService
-\f0\i0 \cf2 \strokec2 (\cf11 \strokec11 "RunService"\cf2 \strokec2 ).RenderStepped
-\f1\i \cf10 \strokec10 :Connect
-\f0\i0 \cf2 \strokec2 (
-\f2\b \cf5 \strokec5 function
-\f0\b0 \cf2 \strokec2 ()\cb1 \
-\cb4             
-\f2\b \cf5 \strokec5 if
-\f0\b0 \cf2 \strokec2  plr.Character \cf6 \strokec6 ~=\cf2 \strokec2  
-\f1\i \cf7 \strokec7 nil
-\f0\i0 \cf2 \strokec2  
-\f2\b \cf5 \strokec5 and
-\f0\b0 \cf2 \strokec2  plr.Character
-\f1\i \cf10 \strokec10 :FindFirstChild
-\f0\i0 \cf2 \strokec2 (\cf11 \strokec11 "Humanoid"\cf2 \strokec2 ) \cf6 \strokec6 ~=\cf2 \strokec2  
-\f1\i \cf7 \strokec7 nil
-\f0\i0 \cf2 \strokec2  
-\f2\b \cf5 \strokec5 and
-\f0\b0 \cf2 \strokec2  plr.Character
-\f1\i \cf10 \strokec10 :FindFirstChild
-\f0\i0 \cf2 \strokec2 (\cf11 \strokec11 "HumanoidRootPart"\cf2 \strokec2 ) \cf6 \strokec6 ~=\cf2 \strokec2  
-\f1\i \cf7 \strokec7 nil
-\f0\i0 \cf2 \strokec2  
-\f2\b \cf5 \strokec5 and
-\f0\b0 \cf2 \strokec2  plr.Character.Humanoid.Health \cf6 \strokec6 >\cf2 \strokec2  \cf8 \strokec8 0\cf2 \strokec2  
-\f2\b \cf5 \strokec5 and
-\f0\b0 \cf2 \strokec2  plr.Character
-\f1\i \cf10 \strokec10 :FindFirstChild
-\f0\i0 \cf2 \strokec2 (\cf11 \strokec11 "Head"\cf2 \strokec2 ) \cf6 \strokec6 ~=\cf2 \strokec2  
-\f1\i \cf7 \strokec7 nil
-\f0\i0 \cf2 \strokec2  
-\f2\b \cf5 \strokec5 then
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4                 
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  Hum \cf6 \strokec6 =\cf2 \strokec2  plr.Character\cb1 \
-\cb4                 
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  HumPos, vis \cf6 \strokec6 =\cf2 \strokec2  Camera
-\f1\i \cf10 \strokec10 :WorldToViewportPoint
-\f0\i0 \cf2 \strokec2 (Hum.HumanoidRootPart.Position)\cb1 \
-\cb4                 
-\f2\b \cf5 \strokec5 if
-\f0\b0 \cf2 \strokec2  vis 
-\f2\b \cf5 \strokec5 then
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4                     oripart.Size \cf6 \strokec6 =\cf2 \strokec2  \cf7 \strokec7 Vector3.new\cf2 \strokec2 (Hum.HumanoidRootPart.Size.X, Hum.HumanoidRootPart.Size.Y\cf6 \strokec6 *\cf8 \strokec8 1.5\cf2 \strokec2 , Hum.HumanoidRootPart.Size.Z)\cb1 \
-\cb4                     oripart.CFrame \cf6 \strokec6 =\cf2 \strokec2  \cf7 \strokec7 CFrame.new\cf2 \strokec2 (Hum.HumanoidRootPart.CFrame.Position, Camera.CFrame.Position)\cb1 \
-\cb4                     
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  SizeX \cf6 \strokec6 =\cf2 \strokec2  oripart.Size.X\cb1 \
-\cb4                     
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  SizeY \cf6 \strokec6 =\cf2 \strokec2  oripart.Size.Y\cb1 \
-\cb4                     
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  TL \cf6 \strokec6 =\cf2 \strokec2  Camera
-\f1\i \cf10 \strokec10 :WorldToViewportPoint
-\f0\i0 \cf2 \strokec2 ((oripart.CFrame \cf6 \strokec6 *\cf2 \strokec2  \cf7 \strokec7 CFrame.new\cf2 \strokec2 (SizeX, SizeY, \cf8 \strokec8 0\cf2 \strokec2 )).p)\cb1 \
-\cb4                     
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  TR \cf6 \strokec6 =\cf2 \strokec2  Camera
-\f1\i \cf10 \strokec10 :WorldToViewportPoint
-\f0\i0 \cf2 \strokec2 ((oripart.CFrame \cf6 \strokec6 *\cf2 \strokec2  \cf7 \strokec7 CFrame.new\cf2 \strokec2 (\cf6 \strokec6 -\cf2 \strokec2 SizeX, SizeY, \cf8 \strokec8 0\cf2 \strokec2 )).p)\cb1 \
-\cb4                     
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  BL \cf6 \strokec6 =\cf2 \strokec2  Camera
-\f1\i \cf10 \strokec10 :WorldToViewportPoint
-\f0\i0 \cf2 \strokec2 ((oripart.CFrame \cf6 \strokec6 *\cf2 \strokec2  \cf7 \strokec7 CFrame.new\cf2 \strokec2 (SizeX, \cf6 \strokec6 -\cf2 \strokec2 SizeY, \cf8 \strokec8 0\cf2 \strokec2 )).p)\cb1 \
-\cb4                     
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  BR \cf6 \strokec6 =\cf2 \strokec2  Camera
-\f1\i \cf10 \strokec10 :WorldToViewportPoint
-\f0\i0 \cf2 \strokec2 ((oripart.CFrame \cf6 \strokec6 *\cf2 \strokec2  \cf7 \strokec7 CFrame.new\cf2 \strokec2 (\cf6 \strokec6 -\cf2 \strokec2 SizeX, \cf6 \strokec6 -\cf2 \strokec2 SizeY, \cf8 \strokec8 0\cf2 \strokec2 )).p)\cb1 \
-\
-\cb4                     
-\f2\b \cf5 \strokec5 if
-\f0\b0 \cf2 \strokec2  Settings.Team_Check 
-\f2\b \cf5 \strokec5 then
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4                         
-\f2\b \cf5 \strokec5 if
-\f0\b0 \cf2 \strokec2  plr.TeamColor \cf6 \strokec6 ==\cf2 \strokec2  Player.TeamColor 
-\f2\b \cf5 \strokec5 then
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4                             Colorize(Library, \cf7 \strokec7 Color3.fromRGB\cf2 \strokec2 (\cf8 \strokec8 0\cf2 \strokec2 , \cf8 \strokec8 255\cf2 \strokec2 , \cf8 \strokec8 0\cf2 \strokec2 ))\cb1 \
-\cb4                         
-\f2\b \cf5 \strokec5 else
-\f0\b0 \cf2 \strokec2  \cb1 \
-\cb4                             Colorize(Library, \cf7 \strokec7 Color3.fromRGB\cf2 \strokec2 (\cf8 \strokec8 255\cf2 \strokec2 , \cf8 \strokec8 0\cf2 \strokec2 , \cf8 \strokec8 0\cf2 \strokec2 ))\cb1 \
-\cb4                         
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4                     
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\
-\cb4                     
-\f2\b \cf5 \strokec5 if
-\f0\b0 \cf2 \strokec2  Settings.Team_Color 
-\f2\b \cf5 \strokec5 then
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4                         Colorize(Library, plr.TeamColor.Color)\cb1 \
-\cb4                     
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\
-\cb4                     
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  ratio \cf6 \strokec6 =\cf2 \strokec2  (Camera.CFrame.p \cf6 \strokec6 -\cf2 \strokec2  Hum.HumanoidRootPart.Position).magnitude\cb1 \
-\cb4                     
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  offset \cf6 \strokec6 =\cf2 \strokec2  \cf7 \strokec7 math.clamp\cf2 \strokec2 (\cf8 \strokec8 1\cf6 \strokec6 /\cf2 \strokec2 ratio\cf6 \strokec6 *\cf8 \strokec8 750\cf2 \strokec2 , \cf8 \strokec8 2\cf2 \strokec2 , \cf8 \strokec8 300\cf2 \strokec2 )\cb1 \
-\
-\cb4                     Library.TL1.From \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(TL.X, TL.Y)\cb1 \
-\cb4                     Library.TL1.To \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(TL.X \cf6 \strokec6 +\cf2 \strokec2  offset, TL.Y)\cb1 \
-\cb4                     Library.TL2.From \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(TL.X, TL.Y)\cb1 \
-\cb4                     Library.TL2.To \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(TL.X, TL.Y \cf6 \strokec6 +\cf2 \strokec2  offset)\cb1 \
-\
-\cb4                     Library.TR1.From \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(TR.X, TR.Y)\cb1 \
-\cb4                     Library.TR1.To \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(TR.X \cf6 \strokec6 -\cf2 \strokec2  offset, TR.Y)\cb1 \
-\cb4                     Library.TR2.From \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(TR.X, TR.Y)\cb1 \
-\cb4                     Library.TR2.To \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(TR.X, TR.Y \cf6 \strokec6 +\cf2 \strokec2  offset)\cb1 \
-\
-\cb4                     Library.BL1.From \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(BL.X, BL.Y)\cb1 \
-\cb4                     Library.BL1.To \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(BL.X \cf6 \strokec6 +\cf2 \strokec2  offset, BL.Y)\cb1 \
-\cb4                     Library.BL2.From \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(BL.X, BL.Y)\cb1 \
-\cb4                     Library.BL2.To \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(BL.X, BL.Y \cf6 \strokec6 -\cf2 \strokec2  offset)\cb1 \
-\
-\cb4                     Library.BR1.From \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(BR.X, BR.Y)\cb1 \
-\cb4                     Library.BR1.To \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(BR.X \cf6 \strokec6 -\cf2 \strokec2  offset, BR.Y)\cb1 \
-\cb4                     Library.BR2.From \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(BR.X, BR.Y)\cb1 \
-\cb4                     Library.BR2.To \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(BR.X, BR.Y \cf6 \strokec6 -\cf2 \strokec2  offset)\cb1 \
-\
-\cb4                     Vis(Library, \cf7 \strokec7 true\cf2 \strokec2 )\cb1 \
-\
-\cb4                     
-\f2\b \cf5 \strokec5 if
-\f0\b0 \cf2 \strokec2  Settings.Autothickness 
-\f2\b \cf5 \strokec5 then
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4                         
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  distance \cf6 \strokec6 =\cf2 \strokec2  (Player.Character.HumanoidRootPart.Position \cf6 \strokec6 -\cf2 \strokec2  oripart.Position).magnitude\cb1 \
-\cb4                         
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  value \cf6 \strokec6 =\cf2 \strokec2  \cf7 \strokec7 math.clamp\cf2 \strokec2 (\cf8 \strokec8 1\cf6 \strokec6 /\cf2 \strokec2 distance\cf6 \strokec6 *\cf8 \strokec8 100\cf2 \strokec2 , \cf8 \strokec8 1\cf2 \strokec2 , \cf8 \strokec8 4\cf2 \strokec2 ) 
-\f1\i \cf3 \strokec3 --0.1 is min thickness, 6 is max
-\f0\i0 \cf2 \cb1 \strokec2 \
-\cb4                         
-\f2\b \cf5 \strokec5 for
-\f0\b0 \cf2 \strokec2  u, x 
-\f2\b \cf5 \strokec5 in
-\f0\b0 \cf2 \strokec2  \cf7 \strokec7 pairs\cf2 \strokec2 (Library) 
-\f2\b \cf5 \strokec5 do
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4                             x.Thickness \cf6 \strokec6 =\cf2 \strokec2  value\cb1 \
-\cb4                         
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4                     
-\f2\b \cf5 \strokec5 else
-\f0\b0 \cf2 \strokec2  \cb1 \
-\cb4                         
-\f2\b \cf5 \strokec5 for
-\f0\b0 \cf2 \strokec2  u, x 
-\f2\b \cf5 \strokec5 in
-\f0\b0 \cf2 \strokec2  \cf7 \strokec7 pairs\cf2 \strokec2 (Library) 
-\f2\b \cf5 \strokec5 do
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4                             x.Thickness \cf6 \strokec6 =\cf2 \strokec2  Settings.Box_Thickness\cb1 \
-\cb4                         
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4                     
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4                 
-\f2\b \cf5 \strokec5 else
-\f0\b0 \cf2 \strokec2  \cb1 \
-\cb4                     Vis(Library, \cf7 \strokec7 false\cf2 \strokec2 )\cb1 \
-\cb4                 
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4             
-\f2\b \cf5 \strokec5 else
-\f0\b0 \cf2 \strokec2  \cb1 \
-\cb4                 Vis(Library, \cf7 \strokec7 false\cf2 \strokec2 )\cb1 \
-\cb4                 
-\f2\b \cf5 \strokec5 if
-\f0\b0 \cf2 \strokec2  \cf9 \strokec9 game
-\f1\i \cf10 \strokec10 :GetService
-\f0\i0 \cf2 \strokec2 (\cf11 \strokec11 "Players"\cf2 \strokec2 )
-\f1\i \cf10 \strokec10 :FindFirstChild
-\f0\i0 \cf2 \strokec2 (plr.Name) \cf6 \strokec6 ==\cf2 \strokec2  
-\f1\i \cf7 \strokec7 nil
-\f0\i0 \cf2 \strokec2  
-\f2\b \cf5 \strokec5 then
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4                     
-\f2\b \cf5 \strokec5 for
-\f0\b0 \cf2 \strokec2  i, v 
-\f2\b \cf5 \strokec5 in
-\f0\b0 \cf2 \strokec2  \cf7 \strokec7 pairs\cf2 \strokec2 (Library) 
-\f2\b \cf5 \strokec5 do
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4                         v
-\f1\i \cf10 \strokec10 :Remove
-\f0\i0 \cf2 \strokec2 ()\cb1 \
-\cb4                         oripart
-\f1\i \cf10 \strokec10 :Destroy
-\f0\i0 \cf2 \strokec2 ()\cb1 \
-\cb4                     
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4                     c
-\f1\i \cf10 \strokec10 :Disconnect
-\f0\i0 \cf2 \strokec2 ()\cb1 \
-\cb4                 
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4             
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4         
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \strokec2 )\cb1 \
-\cb4     
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4     coroutine.wrap(Updater)()\cb1 \
-\pard\pardeftab720\partightenfactor0
+-- Draw Boxes
+for i, v in pairs(game:GetService("Players"):GetPlayers()) do
+    if v.Name ~= Player.Name then
+      coroutine.wrap(Main)(v)
+    end
+end
 
-\f2\b \cf5 \cb4 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\
-\pard\pardeftab720\partightenfactor0
+game:GetService("Players").PlayerAdded:Connect(function(newplr)
+    coroutine.wrap(Main)(newplr)
+end)
+local Player = game:GetService("Players").LocalPlayer
+local Mouse = Player:GetMouse()
+local Camera = game:GetService("Workspace").CurrentCamera
 
-\f1\i \cf3 \cb4 \strokec3 -- Draw Boxes
-\f0\i0 \cf2 \cb1 \strokec2 \
-\pard\pardeftab720\partightenfactor0
+local function DrawLine()
+    local l = Drawing.new("Line")
+    l.Visible = false
+    l.From = Vector2.new(0, 0)
+    l.To = Vector2.new(1, 1)
+    l.Color = Color3.fromRGB(255, 0, 0)
+    l.Thickness = 1
+    l.Transparency = 1
+    return l
+end
 
-\f2\b \cf5 \cb4 \strokec5 for
-\f0\b0 \cf2 \strokec2  i, v 
-\f2\b \cf5 \strokec5 in
-\f0\b0 \cf2 \strokec2  \cf7 \strokec7 pairs\cf2 \strokec2 (\cf9 \strokec9 game
-\f1\i \cf10 \strokec10 :GetService
-\f0\i0 \cf2 \strokec2 (\cf11 \strokec11 "Players"\cf2 \strokec2 )
-\f1\i \cf10 \strokec10 :GetPlayers
-\f0\i0 \cf2 \strokec2 ()) 
-\f2\b \cf5 \strokec5 do
-\f0\b0 \cf2 \cb1 \strokec2 \
-\pard\pardeftab720\partightenfactor0
-\cf2 \cb4     
-\f2\b \cf5 \strokec5 if
-\f0\b0 \cf2 \strokec2  v.Name \cf6 \strokec6 ~=\cf2 \strokec2  Player.Name 
-\f2\b \cf5 \strokec5 then
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4       coroutine.wrap(Main)(v)\cb1 \
-\cb4     
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\pard\pardeftab720\partightenfactor0
+local function DrawESP(plr)
+    repeat wait() until plr.Character ~= nil and plr.Character:FindFirstChild("Humanoid") ~= nil
+    local limbs = {}
+    local R15 = (plr.Character.Humanoid.RigType == Enum.HumanoidRigType.R15) and true or false
+    if R15 then 
+        limbs = {
+            -- Spine
+            Head_UpperTorso = DrawLine(),
+            UpperTorso_LowerTorso = DrawLine(),
+            -- Left Arm
+            UpperTorso_LeftUpperArm = DrawLine(),
+            LeftUpperArm_LeftLowerArm = DrawLine(),
+            LeftLowerArm_LeftHand = DrawLine(),
+            -- Right Arm
+            UpperTorso_RightUpperArm = DrawLine(),
+            RightUpperArm_RightLowerArm = DrawLine(),
+            RightLowerArm_RightHand = DrawLine(),
+            -- Left Leg
+            LowerTorso_LeftUpperLeg = DrawLine(),
+            LeftUpperLeg_LeftLowerLeg = DrawLine(),
+            LeftLowerLeg_LeftFoot = DrawLine(),
+            -- Right Leg
+            LowerTorso_RightUpperLeg = DrawLine(),
+            RightUpperLeg_RightLowerLeg = DrawLine(),
+            RightLowerLeg_RightFoot = DrawLine(),
+        }
+    else 
+        limbs = {
+            Head_Spine = DrawLine(),
+            Spine = DrawLine(),
+            LeftArm = DrawLine(),
+            LeftArm_UpperTorso = DrawLine(),
+            RightArm = DrawLine(),
+            RightArm_UpperTorso = DrawLine(),
+            LeftLeg = DrawLine(),
+            LeftLeg_LowerTorso = DrawLine(),
+            RightLeg = DrawLine(),
+            RightLeg_LowerTorso = DrawLine()
+        }
+    end
+    local function Visibility(state)
+        for i, v in pairs(limbs) do
+            v.Visible = state
+        end
+    end
 
-\f2\b \cf5 \cb4 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\
-\pard\pardeftab720\partightenfactor0
-\cf9 \cb4 \strokec9 game
-\f1\i \cf10 \strokec10 :GetService
-\f0\i0 \cf2 \strokec2 (\cf11 \strokec11 "Players"\cf2 \strokec2 ).PlayerAdded
-\f1\i \cf10 \strokec10 :Connect
-\f0\i0 \cf2 \strokec2 (
-\f2\b \cf5 \strokec5 function
-\f0\b0 \cf2 \strokec2 (newplr)\cb1 \
-\pard\pardeftab720\partightenfactor0
-\cf2 \cb4     coroutine.wrap(Main)(newplr)\cb1 \
-\pard\pardeftab720\partightenfactor0
+    local function Colorize(color)
+        for i, v in pairs(limbs) do
+            v.Color = color
+        end
+    end
 
-\f2\b \cf5 \cb4 \strokec5 end
-\f0\b0 \cf2 \strokec2 )\cb1 \
+    local function UpdaterR15()
+        local connection
+        connection = game:GetService("RunService").RenderStepped:Connect(function()
+            if plr.Character ~= nil and plr.Character:FindFirstChild("Humanoid") ~= nil and plr.Character:FindFirstChild("HumanoidRootPart") ~= nil and plr.Character.Humanoid.Health > 0 then
+                local HUM, vis = Camera:WorldToViewportPoint(plr.Character.HumanoidRootPart.Position)
+                if vis then
+                    -- Head
+                    local H = Camera:WorldToViewportPoint(plr.Character.Head.Position)
+                    if limbs.Head_UpperTorso.From ~= Vector2.new(H.X, H.Y) then
+                        --Spine
+                        local UT = Camera:WorldToViewportPoint(plr.Character.UpperTorso.Position)
+                        local LT = Camera:WorldToViewportPoint(plr.Character.LowerTorso.Position)
+                        -- Left Arm
+                        local LUA = Camera:WorldToViewportPoint(plr.Character.LeftUpperArm.Position)
+                        local LLA = Camera:WorldToViewportPoint(plr.Character.LeftLowerArm.Position)
+                        local LH = Camera:WorldToViewportPoint(plr.Character.LeftHand.Position)
+                        -- Right Arm
+                        local RUA = Camera:WorldToViewportPoint(plr.Character.RightUpperArm.Position)
+                        local RLA = Camera:WorldToViewportPoint(plr.Character.RightLowerArm.Position)
+                        local RH = Camera:WorldToViewportPoint(plr.Character.RightHand.Position)
+                        -- Left leg
+                        local LUL = Camera:WorldToViewportPoint(plr.Character.LeftUpperLeg.Position)
+                        local LLL = Camera:WorldToViewportPoint(plr.Character.LeftLowerLeg.Position)
+                        local LF = Camera:WorldToViewportPoint(plr.Character.LeftFoot.Position)
+                        -- Right leg
+                        local RUL = Camera:WorldToViewportPoint(plr.Character.RightUpperLeg.Position)
+                        local RLL = Camera:WorldToViewportPoint(plr.Character.RightLowerLeg.Position)
+                        local RF = Camera:WorldToViewportPoint(plr.Character.RightFoot.Position)
 
-\f2\b \cf5 \cb4 \strokec5 local
-\f0\b0 \cf2 \strokec2  \cf9 \strokec9 Player\cf2 \strokec2  \cf6 \strokec6 =\cf2 \strokec2  \cf9 \strokec9 game
-\f1\i \cf10 \strokec10 :GetService
-\f0\i0 \cf2 \strokec2 (\cf11 \strokec11 "Players"\cf2 \strokec2 ).\cf9 \strokec9 LocalPlayer\cf2 \cb1 \strokec2 \
+                        --Head
+                        limbs.Head_UpperTorso.From = Vector2.new(H.X, H.Y)
+                        limbs.Head_UpperTorso.To = Vector2.new(UT.X, UT.Y)
 
-\f2\b \cf5 \cb4 \strokec5 local
-\f0\b0 \cf2 \strokec2  Mouse \cf6 \strokec6 =\cf2 \strokec2  \cf9 \strokec9 Player
-\f1\i \cf10 \strokec10 :GetMouse
-\f0\i0 \cf2 \strokec2 ()\cb1 \
+                        --Spine
+                        limbs.UpperTorso_LowerTorso.From = Vector2.new(UT.X, UT.Y)
+                        limbs.UpperTorso_LowerTorso.To = Vector2.new(LT.X, LT.Y)
 
-\f2\b \cf5 \cb4 \strokec5 local
-\f0\b0 \cf2 \strokec2  Camera \cf6 \strokec6 =\cf2 \strokec2  \cf9 \strokec9 game
-\f1\i \cf10 \strokec10 :GetService
-\f0\i0 \cf2 \strokec2 (\cf11 \strokec11 "Workspace"\cf2 \strokec2 ).CurrentCamera\cb1 \
-\
+                        -- Left Arm
+                        limbs.UpperTorso_LeftUpperArm.From = Vector2.new(UT.X, UT.Y)
+                        limbs.UpperTorso_LeftUpperArm.To = Vector2.new(LUA.X, LUA.Y)
 
-\f2\b \cf5 \cb4 \strokec5 local
-\f0\b0 \cf2 \strokec2  
-\f2\b \cf5 \strokec5 function
-\f0\b0 \cf2 \strokec2  DrawLine()\cb1 \
-\pard\pardeftab720\partightenfactor0
-\cf2 \cb4     
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  l \cf6 \strokec6 =\cf2 \strokec2  Drawing.new(\cf11 \strokec11 "Line"\cf2 \strokec2 )\cb1 \
-\cb4     l.Visible \cf6 \strokec6 =\cf2 \strokec2  \cf7 \strokec7 false\cf2 \cb1 \strokec2 \
-\cb4     l.From \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(\cf8 \strokec8 0\cf2 \strokec2 , \cf8 \strokec8 0\cf2 \strokec2 )\cb1 \
-\cb4     l.To \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(\cf8 \strokec8 1\cf2 \strokec2 , \cf8 \strokec8 1\cf2 \strokec2 )\cb1 \
-\cb4     l.Color \cf6 \strokec6 =\cf2 \strokec2  \cf7 \strokec7 Color3.fromRGB\cf2 \strokec2 (\cf8 \strokec8 255\cf2 \strokec2 , \cf8 \strokec8 0\cf2 \strokec2 , \cf8 \strokec8 0\cf2 \strokec2 )\cb1 \
-\cb4     l.Thickness \cf6 \strokec6 =\cf2 \strokec2  \cf8 \strokec8 1\cf2 \cb1 \strokec2 \
-\cb4     l.Transparency \cf6 \strokec6 =\cf2 \strokec2  \cf8 \strokec8 1\cf2 \cb1 \strokec2 \
-\cb4     
-\f2\b \cf5 \strokec5 return
-\f0\b0 \cf2 \strokec2  l\cb1 \
-\pard\pardeftab720\partightenfactor0
+                        limbs.LeftUpperArm_LeftLowerArm.From = Vector2.new(LUA.X, LUA.Y)
+                        limbs.LeftUpperArm_LeftLowerArm.To = Vector2.new(LLA.X, LLA.Y)
 
-\f2\b \cf5 \cb4 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\
+                        limbs.LeftLowerArm_LeftHand.From = Vector2.new(LLA.X, LLA.Y)
+                        limbs.LeftLowerArm_LeftHand.To = Vector2.new(LH.X, LH.Y)
 
-\f2\b \cf5 \cb4 \strokec5 local
-\f0\b0 \cf2 \strokec2  
-\f2\b \cf5 \strokec5 function
-\f0\b0 \cf2 \strokec2  DrawESP(plr)\cb1 \
-\pard\pardeftab720\partightenfactor0
-\cf2 \cb4     
-\f2\b \cf5 \strokec5 repeat
-\f0\b0 \cf2 \strokec2  \cf7 \strokec7 wait\cf2 \strokec2 () 
-\f2\b \cf5 \strokec5 until
-\f0\b0 \cf2 \strokec2  plr.Character \cf6 \strokec6 ~=\cf2 \strokec2  
-\f1\i \cf7 \strokec7 nil
-\f0\i0 \cf2 \strokec2  
-\f2\b \cf5 \strokec5 and
-\f0\b0 \cf2 \strokec2  plr.Character
-\f1\i \cf10 \strokec10 :FindFirstChild
-\f0\i0 \cf2 \strokec2 (\cf11 \strokec11 "Humanoid"\cf2 \strokec2 ) \cf6 \strokec6 ~=\cf2 \strokec2  
-\f1\i \cf7 \strokec7 nil
-\f0\i0 \cf2 \cb1 \strokec2 \
-\cb4     
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  limbs \cf6 \strokec6 =\cf2 \strokec2  \{\}\cb1 \
-\cb4     
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  R15 \cf6 \strokec6 =\cf2 \strokec2  (plr.Character.Humanoid.RigType \cf6 \strokec6 ==\cf2 \strokec2  Enum.HumanoidRigType.R15) 
-\f2\b \cf5 \strokec5 and
-\f0\b0 \cf2 \strokec2  \cf7 \strokec7 true\cf2 \strokec2  
-\f2\b \cf5 \strokec5 or
-\f0\b0 \cf2 \strokec2  \cf7 \strokec7 false\cf2 \cb1 \strokec2 \
-\cb4     
-\f2\b \cf5 \strokec5 if
-\f0\b0 \cf2 \strokec2  R15 
-\f2\b \cf5 \strokec5 then
-\f0\b0 \cf2 \strokec2  \cb1 \
-\cb4         limbs \cf6 \strokec6 =\cf2 \strokec2  \{\cb1 \
-\cb4             
-\f1\i \cf3 \strokec3 -- Spine
-\f0\i0 \cf2 \cb1 \strokec2 \
-\cb4             Head_UpperTorso \cf6 \strokec6 =\cf2 \strokec2  DrawLine(),\cb1 \
-\cb4             UpperTorso_LowerTorso \cf6 \strokec6 =\cf2 \strokec2  DrawLine(),\cb1 \
-\cb4             
-\f1\i \cf3 \strokec3 -- Left Arm
-\f0\i0 \cf2 \cb1 \strokec2 \
-\cb4             UpperTorso_LeftUpperArm \cf6 \strokec6 =\cf2 \strokec2  DrawLine(),\cb1 \
-\cb4             LeftUpperArm_LeftLowerArm \cf6 \strokec6 =\cf2 \strokec2  DrawLine(),\cb1 \
-\cb4             LeftLowerArm_LeftHand \cf6 \strokec6 =\cf2 \strokec2  DrawLine(),\cb1 \
-\cb4             
-\f1\i \cf3 \strokec3 -- Right Arm
-\f0\i0 \cf2 \cb1 \strokec2 \
-\cb4             UpperTorso_RightUpperArm \cf6 \strokec6 =\cf2 \strokec2  DrawLine(),\cb1 \
-\cb4             RightUpperArm_RightLowerArm \cf6 \strokec6 =\cf2 \strokec2  DrawLine(),\cb1 \
-\cb4             RightLowerArm_RightHand \cf6 \strokec6 =\cf2 \strokec2  DrawLine(),\cb1 \
-\cb4             
-\f1\i \cf3 \strokec3 -- Left Leg
-\f0\i0 \cf2 \cb1 \strokec2 \
-\cb4             LowerTorso_LeftUpperLeg \cf6 \strokec6 =\cf2 \strokec2  DrawLine(),\cb1 \
-\cb4             LeftUpperLeg_LeftLowerLeg \cf6 \strokec6 =\cf2 \strokec2  DrawLine(),\cb1 \
-\cb4             LeftLowerLeg_LeftFoot \cf6 \strokec6 =\cf2 \strokec2  DrawLine(),\cb1 \
-\cb4             
-\f1\i \cf3 \strokec3 -- Right Leg
-\f0\i0 \cf2 \cb1 \strokec2 \
-\cb4             LowerTorso_RightUpperLeg \cf6 \strokec6 =\cf2 \strokec2  DrawLine(),\cb1 \
-\cb4             RightUpperLeg_RightLowerLeg \cf6 \strokec6 =\cf2 \strokec2  DrawLine(),\cb1 \
-\cb4             RightLowerLeg_RightFoot \cf6 \strokec6 =\cf2 \strokec2  DrawLine(),\cb1 \
-\cb4         \}\cb1 \
-\cb4     
-\f2\b \cf5 \strokec5 else
-\f0\b0 \cf2 \strokec2  \cb1 \
-\cb4         limbs \cf6 \strokec6 =\cf2 \strokec2  \{\cb1 \
-\cb4             Head_Spine \cf6 \strokec6 =\cf2 \strokec2  DrawLine(),\cb1 \
-\cb4             Spine \cf6 \strokec6 =\cf2 \strokec2  DrawLine(),\cb1 \
-\cb4             LeftArm \cf6 \strokec6 =\cf2 \strokec2  DrawLine(),\cb1 \
-\cb4             LeftArm_UpperTorso \cf6 \strokec6 =\cf2 \strokec2  DrawLine(),\cb1 \
-\cb4             RightArm \cf6 \strokec6 =\cf2 \strokec2  DrawLine(),\cb1 \
-\cb4             RightArm_UpperTorso \cf6 \strokec6 =\cf2 \strokec2  DrawLine(),\cb1 \
-\cb4             LeftLeg \cf6 \strokec6 =\cf2 \strokec2  DrawLine(),\cb1 \
-\cb4             LeftLeg_LowerTorso \cf6 \strokec6 =\cf2 \strokec2  DrawLine(),\cb1 \
-\cb4             RightLeg \cf6 \strokec6 =\cf2 \strokec2  DrawLine(),\cb1 \
-\cb4             RightLeg_LowerTorso \cf6 \strokec6 =\cf2 \strokec2  DrawLine()\cb1 \
-\cb4         \}\cb1 \
-\cb4     
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4     
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  
-\f2\b \cf5 \strokec5 function
-\f0\b0 \cf2 \strokec2  Visibility(state)\cb1 \
-\cb4         
-\f2\b \cf5 \strokec5 for
-\f0\b0 \cf2 \strokec2  i, v 
-\f2\b \cf5 \strokec5 in
-\f0\b0 \cf2 \strokec2  \cf7 \strokec7 pairs\cf2 \strokec2 (limbs) 
-\f2\b \cf5 \strokec5 do
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4             v.Visible \cf6 \strokec6 =\cf2 \strokec2  state\cb1 \
-\cb4         
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4     
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\
-\cb4     
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  
-\f2\b \cf5 \strokec5 function
-\f0\b0 \cf2 \strokec2  Colorize(color)\cb1 \
-\cb4         
-\f2\b \cf5 \strokec5 for
-\f0\b0 \cf2 \strokec2  i, v 
-\f2\b \cf5 \strokec5 in
-\f0\b0 \cf2 \strokec2  \cf7 \strokec7 pairs\cf2 \strokec2 (limbs) 
-\f2\b \cf5 \strokec5 do
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4             v.Color \cf6 \strokec6 =\cf2 \strokec2  color\cb1 \
-\cb4         
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4     
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\
-\cb4     
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  
-\f2\b \cf5 \strokec5 function
-\f0\b0 \cf2 \strokec2  UpdaterR15()\cb1 \
-\cb4         
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  connection\cb1 \
-\cb4         connection \cf6 \strokec6 =\cf2 \strokec2  \cf9 \strokec9 game
-\f1\i \cf10 \strokec10 :GetService
-\f0\i0 \cf2 \strokec2 (\cf11 \strokec11 "RunService"\cf2 \strokec2 ).RenderStepped
-\f1\i \cf10 \strokec10 :Connect
-\f0\i0 \cf2 \strokec2 (
-\f2\b \cf5 \strokec5 function
-\f0\b0 \cf2 \strokec2 ()\cb1 \
-\cb4             
-\f2\b \cf5 \strokec5 if
-\f0\b0 \cf2 \strokec2  plr.Character \cf6 \strokec6 ~=\cf2 \strokec2  
-\f1\i \cf7 \strokec7 nil
-\f0\i0 \cf2 \strokec2  
-\f2\b \cf5 \strokec5 and
-\f0\b0 \cf2 \strokec2  plr.Character
-\f1\i \cf10 \strokec10 :FindFirstChild
-\f0\i0 \cf2 \strokec2 (\cf11 \strokec11 "Humanoid"\cf2 \strokec2 ) \cf6 \strokec6 ~=\cf2 \strokec2  
-\f1\i \cf7 \strokec7 nil
-\f0\i0 \cf2 \strokec2  
-\f2\b \cf5 \strokec5 and
-\f0\b0 \cf2 \strokec2  plr.Character
-\f1\i \cf10 \strokec10 :FindFirstChild
-\f0\i0 \cf2 \strokec2 (\cf11 \strokec11 "HumanoidRootPart"\cf2 \strokec2 ) \cf6 \strokec6 ~=\cf2 \strokec2  
-\f1\i \cf7 \strokec7 nil
-\f0\i0 \cf2 \strokec2  
-\f2\b \cf5 \strokec5 and
-\f0\b0 \cf2 \strokec2  plr.Character.Humanoid.Health \cf6 \strokec6 >\cf2 \strokec2  \cf8 \strokec8 0\cf2 \strokec2  
-\f2\b \cf5 \strokec5 then
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4                 
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  HUM, vis \cf6 \strokec6 =\cf2 \strokec2  Camera
-\f1\i \cf10 \strokec10 :WorldToViewportPoint
-\f0\i0 \cf2 \strokec2 (plr.Character.HumanoidRootPart.Position)\cb1 \
-\cb4                 
-\f2\b \cf5 \strokec5 if
-\f0\b0 \cf2 \strokec2  vis 
-\f2\b \cf5 \strokec5 then
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4                     
-\f1\i \cf3 \strokec3 -- Head
-\f0\i0 \cf2 \cb1 \strokec2 \
-\cb4                     
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  H \cf6 \strokec6 =\cf2 \strokec2  Camera
-\f1\i \cf10 \strokec10 :WorldToViewportPoint
-\f0\i0 \cf2 \strokec2 (plr.Character.Head.Position)\cb1 \
-\cb4                     
-\f2\b \cf5 \strokec5 if
-\f0\b0 \cf2 \strokec2  limbs.Head_UpperTorso.From \cf6 \strokec6 ~=\cf2 \strokec2  Vector2.new(H.X, H.Y) 
-\f2\b \cf5 \strokec5 then
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4                         
-\f1\i \cf3 \strokec3 --Spine
-\f0\i0 \cf2 \cb1 \strokec2 \
-\cb4                         
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  UT \cf6 \strokec6 =\cf2 \strokec2  Camera
-\f1\i \cf10 \strokec10 :WorldToViewportPoint
-\f0\i0 \cf2 \strokec2 (plr.Character.UpperTorso.Position)\cb1 \
-\cb4                         
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  LT \cf6 \strokec6 =\cf2 \strokec2  Camera
-\f1\i \cf10 \strokec10 :WorldToViewportPoint
-\f0\i0 \cf2 \strokec2 (plr.Character.LowerTorso.Position)\cb1 \
-\cb4                         
-\f1\i \cf3 \strokec3 -- Left Arm
-\f0\i0 \cf2 \cb1 \strokec2 \
-\cb4                         
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  LUA \cf6 \strokec6 =\cf2 \strokec2  Camera
-\f1\i \cf10 \strokec10 :WorldToViewportPoint
-\f0\i0 \cf2 \strokec2 (plr.Character.LeftUpperArm.Position)\cb1 \
-\cb4                         
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  LLA \cf6 \strokec6 =\cf2 \strokec2  Camera
-\f1\i \cf10 \strokec10 :WorldToViewportPoint
-\f0\i0 \cf2 \strokec2 (plr.Character.LeftLowerArm.Position)\cb1 \
-\cb4                         
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  LH \cf6 \strokec6 =\cf2 \strokec2  Camera
-\f1\i \cf10 \strokec10 :WorldToViewportPoint
-\f0\i0 \cf2 \strokec2 (plr.Character.LeftHand.Position)\cb1 \
-\cb4                         
-\f1\i \cf3 \strokec3 -- Right Arm
-\f0\i0 \cf2 \cb1 \strokec2 \
-\cb4                         
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  RUA \cf6 \strokec6 =\cf2 \strokec2  Camera
-\f1\i \cf10 \strokec10 :WorldToViewportPoint
-\f0\i0 \cf2 \strokec2 (plr.Character.RightUpperArm.Position)\cb1 \
-\cb4                         
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  RLA \cf6 \strokec6 =\cf2 \strokec2  Camera
-\f1\i \cf10 \strokec10 :WorldToViewportPoint
-\f0\i0 \cf2 \strokec2 (plr.Character.RightLowerArm.Position)\cb1 \
-\cb4                         
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  RH \cf6 \strokec6 =\cf2 \strokec2  Camera
-\f1\i \cf10 \strokec10 :WorldToViewportPoint
-\f0\i0 \cf2 \strokec2 (plr.Character.RightHand.Position)\cb1 \
-\cb4                         
-\f1\i \cf3 \strokec3 -- Left leg
-\f0\i0 \cf2 \cb1 \strokec2 \
-\cb4                         
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  LUL \cf6 \strokec6 =\cf2 \strokec2  Camera
-\f1\i \cf10 \strokec10 :WorldToViewportPoint
-\f0\i0 \cf2 \strokec2 (plr.Character.LeftUpperLeg.Position)\cb1 \
-\cb4                         
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  LLL \cf6 \strokec6 =\cf2 \strokec2  Camera
-\f1\i \cf10 \strokec10 :WorldToViewportPoint
-\f0\i0 \cf2 \strokec2 (plr.Character.LeftLowerLeg.Position)\cb1 \
-\cb4                         
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  LF \cf6 \strokec6 =\cf2 \strokec2  Camera
-\f1\i \cf10 \strokec10 :WorldToViewportPoint
-\f0\i0 \cf2 \strokec2 (plr.Character.LeftFoot.Position)\cb1 \
-\cb4                         
-\f1\i \cf3 \strokec3 -- Right leg
-\f0\i0 \cf2 \cb1 \strokec2 \
-\cb4                         
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  RUL \cf6 \strokec6 =\cf2 \strokec2  Camera
-\f1\i \cf10 \strokec10 :WorldToViewportPoint
-\f0\i0 \cf2 \strokec2 (plr.Character.RightUpperLeg.Position)\cb1 \
-\cb4                         
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  RLL \cf6 \strokec6 =\cf2 \strokec2  Camera
-\f1\i \cf10 \strokec10 :WorldToViewportPoint
-\f0\i0 \cf2 \strokec2 (plr.Character.RightLowerLeg.Position)\cb1 \
-\cb4                         
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  RF \cf6 \strokec6 =\cf2 \strokec2  Camera
-\f1\i \cf10 \strokec10 :WorldToViewportPoint
-\f0\i0 \cf2 \strokec2 (plr.Character.RightFoot.Position)\cb1 \
-\
-\cb4                         
-\f1\i \cf3 \strokec3 --Head
-\f0\i0 \cf2 \cb1 \strokec2 \
-\cb4                         limbs.Head_UpperTorso.From \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(H.X, H.Y)\cb1 \
-\cb4                         limbs.Head_UpperTorso.To \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(UT.X, UT.Y)\cb1 \
-\
-\cb4                         
-\f1\i \cf3 \strokec3 --Spine
-\f0\i0 \cf2 \cb1 \strokec2 \
-\cb4                         limbs.UpperTorso_LowerTorso.From \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(UT.X, UT.Y)\cb1 \
-\cb4                         limbs.UpperTorso_LowerTorso.To \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(LT.X, LT.Y)\cb1 \
-\
-\cb4                         
-\f1\i \cf3 \strokec3 -- Left Arm
-\f0\i0 \cf2 \cb1 \strokec2 \
-\cb4                         limbs.UpperTorso_LeftUpperArm.From \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(UT.X, UT.Y)\cb1 \
-\cb4                         limbs.UpperTorso_LeftUpperArm.To \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(LUA.X, LUA.Y)\cb1 \
-\
-\cb4                         limbs.LeftUpperArm_LeftLowerArm.From \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(LUA.X, LUA.Y)\cb1 \
-\cb4                         limbs.LeftUpperArm_LeftLowerArm.To \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(LLA.X, LLA.Y)\cb1 \
-\
-\cb4                         limbs.LeftLowerArm_LeftHand.From \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(LLA.X, LLA.Y)\cb1 \
-\cb4                         limbs.LeftLowerArm_LeftHand.To \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(LH.X, LH.Y)\cb1 \
-\
-\cb4                         
-\f1\i \cf3 \strokec3 -- Right Arm
-\f0\i0 \cf2 \cb1 \strokec2 \
-\cb4                         limbs.UpperTorso_RightUpperArm.From \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(UT.X, UT.Y)\cb1 \
-\cb4                         limbs.UpperTorso_RightUpperArm.To \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(RUA.X, RUA.Y)\cb1 \
-\
-\cb4                         limbs.RightUpperArm_RightLowerArm.From \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(RUA.X, RUA.Y)\cb1 \
-\cb4                         limbs.RightUpperArm_RightLowerArm.To \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(RLA.X, RLA.Y)\cb1 \
-\
-\cb4                         limbs.RightLowerArm_RightHand.From \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(RLA.X, RLA.Y)\cb1 \
-\cb4                         limbs.RightLowerArm_RightHand.To \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(RH.X, RH.Y)\cb1 \
-\
-\cb4                         
-\f1\i \cf3 \strokec3 -- Left Leg
-\f0\i0 \cf2 \cb1 \strokec2 \
-\cb4                         limbs.LowerTorso_LeftUpperLeg.From \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(LT.X, LT.Y)\cb1 \
-\cb4                         limbs.LowerTorso_LeftUpperLeg.To \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(LUL.X, LUL.Y)\cb1 \
-\
-\cb4                         limbs.LeftUpperLeg_LeftLowerLeg.From \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(LUL.X, LUL.Y)\cb1 \
-\cb4                         limbs.LeftUpperLeg_LeftLowerLeg.To \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(LLL.X, LLL.Y)\cb1 \
-\
-\cb4                         limbs.LeftLowerLeg_LeftFoot.From \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(LLL.X, LLL.Y)\cb1 \
-\cb4                         limbs.LeftLowerLeg_LeftFoot.To \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(LF.X, LF.Y)\cb1 \
-\
-\cb4                         
-\f1\i \cf3 \strokec3 -- Right Leg
-\f0\i0 \cf2 \cb1 \strokec2 \
-\cb4                         limbs.LowerTorso_RightUpperLeg.From \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(LT.X, LT.Y)\cb1 \
-\cb4                         limbs.LowerTorso_RightUpperLeg.To \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(RUL.X, RUL.Y)\cb1 \
-\
-\cb4                         limbs.RightUpperLeg_RightLowerLeg.From \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(RUL.X, RUL.Y)\cb1 \
-\cb4                         limbs.RightUpperLeg_RightLowerLeg.To \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(RLL.X, RLL.Y)\cb1 \
-\
-\cb4                         limbs.RightLowerLeg_RightFoot.From \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(RLL.X, RLL.Y)\cb1 \
-\cb4                         limbs.RightLowerLeg_RightFoot.To \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(RF.X, RF.Y)\cb1 \
-\cb4                     
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\
-\cb4                     
-\f2\b \cf5 \strokec5 if
-\f0\b0 \cf2 \strokec2  limbs.Head_UpperTorso.Visible \cf6 \strokec6 ~=\cf2 \strokec2  \cf7 \strokec7 true\cf2 \strokec2  
-\f2\b \cf5 \strokec5 then
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4                         Visibility(\cf7 \strokec7 true\cf2 \strokec2 )\cb1 \
-\cb4                     
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4                 
-\f2\b \cf5 \strokec5 else
-\f0\b0 \cf2 \strokec2  \cb1 \
-\cb4                     
-\f2\b \cf5 \strokec5 if
-\f0\b0 \cf2 \strokec2  limbs.Head_UpperTorso.Visible \cf6 \strokec6 ~=\cf2 \strokec2  \cf7 \strokec7 false\cf2 \strokec2  
-\f2\b \cf5 \strokec5 then
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4                         Visibility(\cf7 \strokec7 false\cf2 \strokec2 )\cb1 \
-\cb4                     
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4                 
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4             
-\f2\b \cf5 \strokec5 else
-\f0\b0 \cf2 \strokec2  \cb1 \
-\cb4                 
-\f2\b \cf5 \strokec5 if
-\f0\b0 \cf2 \strokec2  limbs.Head_UpperTorso.Visible \cf6 \strokec6 ~=\cf2 \strokec2  \cf7 \strokec7 false\cf2 \strokec2  
-\f2\b \cf5 \strokec5 then
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4                     Visibility(\cf7 \strokec7 false\cf2 \strokec2 )\cb1 \
-\cb4                 
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4                 
-\f2\b \cf5 \strokec5 if
-\f0\b0 \cf2 \strokec2  \cf9 \strokec9 game.Players
-\f1\i \cf10 \strokec10 :FindFirstChild
-\f0\i0 \cf2 \strokec2 (plr.Name) \cf6 \strokec6 ==\cf2 \strokec2  
-\f1\i \cf7 \strokec7 nil
-\f0\i0 \cf2 \strokec2  
-\f2\b \cf5 \strokec5 then
-\f0\b0 \cf2 \strokec2  \cb1 \
-\cb4                     
-\f2\b \cf5 \strokec5 for
-\f0\b0 \cf2 \strokec2  i, v 
-\f2\b \cf5 \strokec5 in
-\f0\b0 \cf2 \strokec2  \cf7 \strokec7 pairs\cf2 \strokec2 (limbs) 
-\f2\b \cf5 \strokec5 do
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4                         v
-\f1\i \cf10 \strokec10 :Remove
-\f0\i0 \cf2 \strokec2 ()\cb1 \
-\cb4                     
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4                     connection
-\f1\i \cf10 \strokec10 :Disconnect
-\f0\i0 \cf2 \strokec2 ()\cb1 \
-\cb4                 
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4             
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4         
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \strokec2 )\cb1 \
-\cb4     
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\
-\cb4     
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  
-\f2\b \cf5 \strokec5 function
-\f0\b0 \cf2 \strokec2  UpdaterR6()\cb1 \
-\cb4         
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  connection\cb1 \
-\cb4         connection \cf6 \strokec6 =\cf2 \strokec2  \cf9 \strokec9 game
-\f1\i \cf10 \strokec10 :GetService
-\f0\i0 \cf2 \strokec2 (\cf11 \strokec11 "RunService"\cf2 \strokec2 ).RenderStepped
-\f1\i \cf10 \strokec10 :Connect
-\f0\i0 \cf2 \strokec2 (
-\f2\b \cf5 \strokec5 function
-\f0\b0 \cf2 \strokec2 ()\cb1 \
-\cb4             
-\f2\b \cf5 \strokec5 if
-\f0\b0 \cf2 \strokec2  plr.Character \cf6 \strokec6 ~=\cf2 \strokec2  
-\f1\i \cf7 \strokec7 nil
-\f0\i0 \cf2 \strokec2  
-\f2\b \cf5 \strokec5 and
-\f0\b0 \cf2 \strokec2  plr.Character
-\f1\i \cf10 \strokec10 :FindFirstChild
-\f0\i0 \cf2 \strokec2 (\cf11 \strokec11 "Humanoid"\cf2 \strokec2 ) \cf6 \strokec6 ~=\cf2 \strokec2  
-\f1\i \cf7 \strokec7 nil
-\f0\i0 \cf2 \strokec2  
-\f2\b \cf5 \strokec5 and
-\f0\b0 \cf2 \strokec2  plr.Character
-\f1\i \cf10 \strokec10 :FindFirstChild
-\f0\i0 \cf2 \strokec2 (\cf11 \strokec11 "HumanoidRootPart"\cf2 \strokec2 ) \cf6 \strokec6 ~=\cf2 \strokec2  
-\f1\i \cf7 \strokec7 nil
-\f0\i0 \cf2 \strokec2  
-\f2\b \cf5 \strokec5 and
-\f0\b0 \cf2 \strokec2  plr.Character.Humanoid.Health \cf6 \strokec6 >\cf2 \strokec2  \cf8 \strokec8 0\cf2 \strokec2  
-\f2\b \cf5 \strokec5 then
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4                 
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  HUM, vis \cf6 \strokec6 =\cf2 \strokec2  Camera
-\f1\i \cf10 \strokec10 :WorldToViewportPoint
-\f0\i0 \cf2 \strokec2 (plr.Character.HumanoidRootPart.Position)\cb1 \
-\cb4                 
-\f2\b \cf5 \strokec5 if
-\f0\b0 \cf2 \strokec2  vis 
-\f2\b \cf5 \strokec5 then
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4                     
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  H \cf6 \strokec6 =\cf2 \strokec2  Camera
-\f1\i \cf10 \strokec10 :WorldToViewportPoint
-\f0\i0 \cf2 \strokec2 (plr.Character.Head.Position)\cb1 \
-\cb4                     
-\f2\b \cf5 \strokec5 if
-\f0\b0 \cf2 \strokec2  limbs.Head_Spine.From \cf6 \strokec6 ~=\cf2 \strokec2  Vector2.new(H.X, H.Y) 
-\f2\b \cf5 \strokec5 then
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4                         
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  T_Height \cf6 \strokec6 =\cf2 \strokec2  plr.Character.Torso.Size.Y\cf6 \strokec6 /\cf8 \strokec8 2\cf2 \strokec2  \cf6 \strokec6 -\cf2 \strokec2  \cf8 \strokec8 0.2\cf2 \cb1 \strokec2 \
-\cb4                         
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  UT \cf6 \strokec6 =\cf2 \strokec2  Camera
-\f1\i \cf10 \strokec10 :WorldToViewportPoint
-\f0\i0 \cf2 \strokec2 ((plr.Character.Torso.CFrame \cf6 \strokec6 *\cf2 \strokec2  \cf7 \strokec7 CFrame.new\cf2 \strokec2 (\cf8 \strokec8 0\cf2 \strokec2 , T_Height, \cf8 \strokec8 0\cf2 \strokec2 )).p)\cb1 \
-\cb4                         
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  LT \cf6 \strokec6 =\cf2 \strokec2  Camera
-\f1\i \cf10 \strokec10 :WorldToViewportPoint
-\f0\i0 \cf2 \strokec2 ((plr.Character.Torso.CFrame \cf6 \strokec6 *\cf2 \strokec2  \cf7 \strokec7 CFrame.new\cf2 \strokec2 (\cf8 \strokec8 0\cf2 \strokec2 , \cf6 \strokec6 -\cf2 \strokec2 T_Height, \cf8 \strokec8 0\cf2 \strokec2 )).p)\cb1 \
-\
-\cb4                         
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  LA_Height \cf6 \strokec6 =\cf2 \strokec2  plr.Character[\cf11 \strokec11 "Left Arm"\cf2 \strokec2 ].Size.Y\cf6 \strokec6 /\cf8 \strokec8 2\cf2 \strokec2  \cf6 \strokec6 -\cf2 \strokec2  \cf8 \strokec8 0.2\cf2 \cb1 \strokec2 \
-\cb4                         
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  LUA \cf6 \strokec6 =\cf2 \strokec2  Camera
-\f1\i \cf10 \strokec10 :WorldToViewportPoint
-\f0\i0 \cf2 \strokec2 ((plr.Character[\cf11 \strokec11 "Left Arm"\cf2 \strokec2 ].
-\f1\i \cf7 \strokec7 CFrame
-\f0\i0 \cf2 \strokec2  \cf6 \strokec6 *\cf2 \strokec2  \cf7 \strokec7 CFrame.new\cf2 \strokec2 (\cf8 \strokec8 0\cf2 \strokec2 , LA_Height, \cf8 \strokec8 0\cf2 \strokec2 )).p)\cb1 \
-\cb4                         
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  LLA \cf6 \strokec6 =\cf2 \strokec2  Camera
-\f1\i \cf10 \strokec10 :WorldToViewportPoint
-\f0\i0 \cf2 \strokec2 ((plr.Character[\cf11 \strokec11 "Left Arm"\cf2 \strokec2 ].
-\f1\i \cf7 \strokec7 CFrame
-\f0\i0 \cf2 \strokec2  \cf6 \strokec6 *\cf2 \strokec2  \cf7 \strokec7 CFrame.new\cf2 \strokec2 (\cf8 \strokec8 0\cf2 \strokec2 , \cf6 \strokec6 -\cf2 \strokec2 LA_Height, \cf8 \strokec8 0\cf2 \strokec2 )).p)\cb1 \
-\
-\cb4                         
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  RA_Height \cf6 \strokec6 =\cf2 \strokec2  plr.Character[\cf11 \strokec11 "Right Arm"\cf2 \strokec2 ].Size.Y\cf6 \strokec6 /\cf8 \strokec8 2\cf2 \strokec2  \cf6 \strokec6 -\cf2 \strokec2  \cf8 \strokec8 0.2\cf2 \cb1 \strokec2 \
-\cb4                         
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  RUA \cf6 \strokec6 =\cf2 \strokec2  Camera
-\f1\i \cf10 \strokec10 :WorldToViewportPoint
-\f0\i0 \cf2 \strokec2 ((plr.Character[\cf11 \strokec11 "Right Arm"\cf2 \strokec2 ].
-\f1\i \cf7 \strokec7 CFrame
-\f0\i0 \cf2 \strokec2  \cf6 \strokec6 *\cf2 \strokec2  \cf7 \strokec7 CFrame.new\cf2 \strokec2 (\cf8 \strokec8 0\cf2 \strokec2 , RA_Height, \cf8 \strokec8 0\cf2 \strokec2 )).p)\cb1 \
-\cb4                         
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  RLA \cf6 \strokec6 =\cf2 \strokec2  Camera
-\f1\i \cf10 \strokec10 :WorldToViewportPoint
-\f0\i0 \cf2 \strokec2 ((plr.Character[\cf11 \strokec11 "Right Arm"\cf2 \strokec2 ].
-\f1\i \cf7 \strokec7 CFrame
-\f0\i0 \cf2 \strokec2  \cf6 \strokec6 *\cf2 \strokec2  \cf7 \strokec7 CFrame.new\cf2 \strokec2 (\cf8 \strokec8 0\cf2 \strokec2 , \cf6 \strokec6 -\cf2 \strokec2 RA_Height, \cf8 \strokec8 0\cf2 \strokec2 )).p)\cb1 \
-\
-\cb4                         
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  LL_Height \cf6 \strokec6 =\cf2 \strokec2  plr.Character[\cf11 \strokec11 "Left Leg"\cf2 \strokec2 ].Size.Y\cf6 \strokec6 /\cf8 \strokec8 2\cf2 \strokec2  \cf6 \strokec6 -\cf2 \strokec2  \cf8 \strokec8 0.2\cf2 \cb1 \strokec2 \
-\cb4                         
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  LUL \cf6 \strokec6 =\cf2 \strokec2  Camera
-\f1\i \cf10 \strokec10 :WorldToViewportPoint
-\f0\i0 \cf2 \strokec2 ((plr.Character[\cf11 \strokec11 "Left Leg"\cf2 \strokec2 ].
-\f1\i \cf7 \strokec7 CFrame
-\f0\i0 \cf2 \strokec2  \cf6 \strokec6 *\cf2 \strokec2  \cf7 \strokec7 CFrame.new\cf2 \strokec2 (\cf8 \strokec8 0\cf2 \strokec2 , LL_Height, \cf8 \strokec8 0\cf2 \strokec2 )).p)\cb1 \
-\cb4                         
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  LLL \cf6 \strokec6 =\cf2 \strokec2  Camera
-\f1\i \cf10 \strokec10 :WorldToViewportPoint
-\f0\i0 \cf2 \strokec2 ((plr.Character[\cf11 \strokec11 "Left Leg"\cf2 \strokec2 ].
-\f1\i \cf7 \strokec7 CFrame
-\f0\i0 \cf2 \strokec2  \cf6 \strokec6 *\cf2 \strokec2  \cf7 \strokec7 CFrame.new\cf2 \strokec2 (\cf8 \strokec8 0\cf2 \strokec2 , \cf6 \strokec6 -\cf2 \strokec2 LL_Height, \cf8 \strokec8 0\cf2 \strokec2 )).p)\cb1 \
-\
-\cb4                         
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  RL_Height \cf6 \strokec6 =\cf2 \strokec2  plr.Character[\cf11 \strokec11 "Right Leg"\cf2 \strokec2 ].Size.Y\cf6 \strokec6 /\cf8 \strokec8 2\cf2 \strokec2  \cf6 \strokec6 -\cf2 \strokec2  \cf8 \strokec8 0.2\cf2 \cb1 \strokec2 \
-\cb4                         
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  RUL \cf6 \strokec6 =\cf2 \strokec2  Camera
-\f1\i \cf10 \strokec10 :WorldToViewportPoint
-\f0\i0 \cf2 \strokec2 ((plr.Character[\cf11 \strokec11 "Right Leg"\cf2 \strokec2 ].
-\f1\i \cf7 \strokec7 CFrame
-\f0\i0 \cf2 \strokec2  \cf6 \strokec6 *\cf2 \strokec2  \cf7 \strokec7 CFrame.new\cf2 \strokec2 (\cf8 \strokec8 0\cf2 \strokec2 , RL_Height, \cf8 \strokec8 0\cf2 \strokec2 )).p)\cb1 \
-\cb4                         
-\f2\b \cf5 \strokec5 local
-\f0\b0 \cf2 \strokec2  RLL \cf6 \strokec6 =\cf2 \strokec2  Camera
-\f1\i \cf10 \strokec10 :WorldToViewportPoint
-\f0\i0 \cf2 \strokec2 ((plr.Character[\cf11 \strokec11 "Right Leg"\cf2 \strokec2 ].
-\f1\i \cf7 \strokec7 CFrame
-\f0\i0 \cf2 \strokec2  \cf6 \strokec6 *\cf2 \strokec2  \cf7 \strokec7 CFrame.new\cf2 \strokec2 (\cf8 \strokec8 0\cf2 \strokec2 , \cf6 \strokec6 -\cf2 \strokec2 RL_Height, \cf8 \strokec8 0\cf2 \strokec2 )).p)\cb1 \
-\
-\cb4                         
-\f1\i \cf3 \strokec3 -- Head
-\f0\i0 \cf2 \cb1 \strokec2 \
-\cb4                         limbs.Head_Spine.From \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(H.X, H.Y)\cb1 \
-\cb4                         limbs.Head_Spine.To \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(UT.X, UT.Y)\cb1 \
-\
-\cb4                         
-\f1\i \cf3 \strokec3 --Spine
-\f0\i0 \cf2 \cb1 \strokec2 \
-\cb4                         limbs.Spine.From \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(UT.X, UT.Y)\cb1 \
-\cb4                         limbs.Spine.To \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(LT.X, LT.Y)\cb1 \
-\
-\cb4                         
-\f1\i \cf3 \strokec3 --Left Arm
-\f0\i0 \cf2 \cb1 \strokec2 \
-\cb4                         limbs.LeftArm.From \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(LUA.X, LUA.Y)\cb1 \
-\cb4                         limbs.LeftArm.To \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(LLA.X, LLA.Y)\cb1 \
-\
-\cb4                         limbs.LeftArm_UpperTorso.From \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(UT.X, UT.Y)\cb1 \
-\cb4                         limbs.LeftArm_UpperTorso.To \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(LUA.X, LUA.Y)\cb1 \
-\
-\cb4                         
-\f1\i \cf3 \strokec3 --Right Arm
-\f0\i0 \cf2 \cb1 \strokec2 \
-\cb4                         limbs.RightArm.From \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(RUA.X, RUA.Y)\cb1 \
-\cb4                         limbs.RightArm.To \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(RLA.X, RLA.Y)\cb1 \
-\
-\cb4                         limbs.RightArm_UpperTorso.From \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(UT.X, UT.Y)\cb1 \
-\cb4                         limbs.RightArm_UpperTorso.To \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(RUA.X, RUA.Y)\cb1 \
-\
-\cb4                         
-\f1\i \cf3 \strokec3 --Left Leg
-\f0\i0 \cf2 \cb1 \strokec2 \
-\cb4                         limbs.LeftLeg.From \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(LUL.X, LUL.Y)\cb1 \
-\cb4                         limbs.LeftLeg.To \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(LLL.X, LLL.Y)\cb1 \
-\
-\cb4                         limbs.LeftLeg_LowerTorso.From \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(LT.X, LT.Y)\cb1 \
-\cb4                         limbs.LeftLeg_LowerTorso.To \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(LUL.X, LUL.Y)\cb1 \
-\
-\cb4                         
-\f1\i \cf3 \strokec3 --Right Leg
-\f0\i0 \cf2 \cb1 \strokec2 \
-\cb4                         limbs.RightLeg.From \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(RUL.X, RUL.Y)\cb1 \
-\cb4                         limbs.RightLeg.To \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(RLL.X, RLL.Y)\cb1 \
-\
-\cb4                         limbs.RightLeg_LowerTorso.From \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(LT.X, LT.Y)\cb1 \
-\cb4                         limbs.RightLeg_LowerTorso.To \cf6 \strokec6 =\cf2 \strokec2  Vector2.new(RUL.X, RUL.Y)\cb1 \
-\cb4                     
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\
-\cb4                     
-\f2\b \cf5 \strokec5 if
-\f0\b0 \cf2 \strokec2  limbs.Head_Spine.Visible \cf6 \strokec6 ~=\cf2 \strokec2  \cf7 \strokec7 true\cf2 \strokec2  
-\f2\b \cf5 \strokec5 then
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4                         Visibility(\cf7 \strokec7 true\cf2 \strokec2 )\cb1 \
-\cb4                     
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4                 
-\f2\b \cf5 \strokec5 else
-\f0\b0 \cf2 \strokec2  \cb1 \
-\cb4                     
-\f2\b \cf5 \strokec5 if
-\f0\b0 \cf2 \strokec2  limbs.Head_Spine.Visible \cf6 \strokec6 ~=\cf2 \strokec2  \cf7 \strokec7 false\cf2 \strokec2  
-\f2\b \cf5 \strokec5 then
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4                         Visibility(\cf7 \strokec7 false\cf2 \strokec2 )\cb1 \
-\cb4                     
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4                 
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4             
-\f2\b \cf5 \strokec5 else
-\f0\b0 \cf2 \strokec2  \cb1 \
-\cb4                 
-\f2\b \cf5 \strokec5 if
-\f0\b0 \cf2 \strokec2  limbs.Head_Spine.Visible \cf6 \strokec6 ~=\cf2 \strokec2  \cf7 \strokec7 false\cf2 \strokec2  
-\f2\b \cf5 \strokec5 then
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4                     Visibility(\cf7 \strokec7 false\cf2 \strokec2 )\cb1 \
-\cb4                 
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4                 
-\f2\b \cf5 \strokec5 if
-\f0\b0 \cf2 \strokec2  \cf9 \strokec9 game.Players
-\f1\i \cf10 \strokec10 :FindFirstChild
-\f0\i0 \cf2 \strokec2 (plr.Name) \cf6 \strokec6 ==\cf2 \strokec2  
-\f1\i \cf7 \strokec7 nil
-\f0\i0 \cf2 \strokec2  
-\f2\b \cf5 \strokec5 then
-\f0\b0 \cf2 \strokec2  \cb1 \
-\cb4                     
-\f2\b \cf5 \strokec5 for
-\f0\b0 \cf2 \strokec2  i, v 
-\f2\b \cf5 \strokec5 in
-\f0\b0 \cf2 \strokec2  \cf7 \strokec7 pairs\cf2 \strokec2 (limbs) 
-\f2\b \cf5 \strokec5 do
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4                         v
-\f1\i \cf10 \strokec10 :Remove
-\f0\i0 \cf2 \strokec2 ()\cb1 \
-\cb4                     
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4                     connection
-\f1\i \cf10 \strokec10 :Disconnect
-\f0\i0 \cf2 \strokec2 ()\cb1 \
-\cb4                 
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4             
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4         
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \strokec2 )\cb1 \
-\cb4     
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\
-\cb4     
-\f2\b \cf5 \strokec5 if
-\f0\b0 \cf2 \strokec2  R15 
-\f2\b \cf5 \strokec5 then
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4         coroutine.wrap(UpdaterR15)()\cb1 \
-\cb4     
-\f2\b \cf5 \strokec5 else
-\f0\b0 \cf2 \strokec2  \cb1 \
-\cb4         coroutine.wrap(UpdaterR6)()\cb1 \
-\cb4     
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\pard\pardeftab720\partightenfactor0
+                        -- Right Arm
+                        limbs.UpperTorso_RightUpperArm.From = Vector2.new(UT.X, UT.Y)
+                        limbs.UpperTorso_RightUpperArm.To = Vector2.new(RUA.X, RUA.Y)
 
-\f2\b \cf5 \cb4 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\
+                        limbs.RightUpperArm_RightLowerArm.From = Vector2.new(RUA.X, RUA.Y)
+                        limbs.RightUpperArm_RightLowerArm.To = Vector2.new(RLA.X, RLA.Y)
 
-\f2\b \cf5 \cb4 \strokec5 for
-\f0\b0 \cf2 \strokec2  i, v 
-\f2\b \cf5 \strokec5 in
-\f0\b0 \cf2 \strokec2  \cf7 \strokec7 pairs\cf2 \strokec2 (\cf9 \strokec9 game
-\f1\i \cf10 \strokec10 :GetService
-\f0\i0 \cf2 \strokec2 (\cf11 \strokec11 "Players"\cf2 \strokec2 )
-\f1\i \cf10 \strokec10 :GetPlayers
-\f0\i0 \cf2 \strokec2 ()) 
-\f2\b \cf5 \strokec5 do
-\f0\b0 \cf2 \cb1 \strokec2 \
-\pard\pardeftab720\partightenfactor0
-\cf2 \cb4     
-\f2\b \cf5 \strokec5 if
-\f0\b0 \cf2 \strokec2  v.Name \cf6 \strokec6 ~=\cf2 \strokec2  Player.Name 
-\f2\b \cf5 \strokec5 then
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4         DrawESP(v)\cb1 \
-\cb4     
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\pard\pardeftab720\partightenfactor0
+                        limbs.RightLowerArm_RightHand.From = Vector2.new(RLA.X, RLA.Y)
+                        limbs.RightLowerArm_RightHand.To = Vector2.new(RH.X, RH.Y)
 
-\f2\b \cf5 \cb4 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\
-\pard\pardeftab720\partightenfactor0
-\cf2 \cb4 game.Players.PlayerAdded
-\f1\i \cf10 \strokec10 :Connect
-\f0\i0 \cf2 \strokec2 (
-\f2\b \cf5 \strokec5 function
-\f0\b0 \cf2 \strokec2 (newplr)\cb1 \
-\cb4     
-\f2\b \cf5 \strokec5 if
-\f0\b0 \cf2 \strokec2  newplr.Name \cf6 \strokec6 ~=\cf2 \strokec2  Player.Name 
-\f2\b \cf5 \strokec5 then
-\f0\b0 \cf2 \cb1 \strokec2 \
-\cb4         DrawESP(newplr)\cb1 \
-\cb4     
-\f2\b \cf5 \strokec5 end
-\f0\b0 \cf2 \cb1 \strokec2 \
-\pard\pardeftab720\partightenfactor0
+                        -- Left Leg
+                        limbs.LowerTorso_LeftUpperLeg.From = Vector2.new(LT.X, LT.Y)
+                        limbs.LowerTorso_LeftUpperLeg.To = Vector2.new(LUL.X, LUL.Y)
 
-\f2\b \cf5 \cb4 \strokec5 end
-\f0\b0 \cf2 \strokec2 )\cb1 \
-}
+                        limbs.LeftUpperLeg_LeftLowerLeg.From = Vector2.new(LUL.X, LUL.Y)
+                        limbs.LeftUpperLeg_LeftLowerLeg.To = Vector2.new(LLL.X, LLL.Y)
+
+                        limbs.LeftLowerLeg_LeftFoot.From = Vector2.new(LLL.X, LLL.Y)
+                        limbs.LeftLowerLeg_LeftFoot.To = Vector2.new(LF.X, LF.Y)
+
+                        -- Right Leg
+                        limbs.LowerTorso_RightUpperLeg.From = Vector2.new(LT.X, LT.Y)
+                        limbs.LowerTorso_RightUpperLeg.To = Vector2.new(RUL.X, RUL.Y)
+
+                        limbs.RightUpperLeg_RightLowerLeg.From = Vector2.new(RUL.X, RUL.Y)
+                        limbs.RightUpperLeg_RightLowerLeg.To = Vector2.new(RLL.X, RLL.Y)
+
+                        limbs.RightLowerLeg_RightFoot.From = Vector2.new(RLL.X, RLL.Y)
+                        limbs.RightLowerLeg_RightFoot.To = Vector2.new(RF.X, RF.Y)
+                    end
+
+                    if limbs.Head_UpperTorso.Visible ~= true then
+                        Visibility(true)
+                    end
+                else 
+                    if limbs.Head_UpperTorso.Visible ~= false then
+                        Visibility(false)
+                    end
+                end
+            else 
+                if limbs.Head_UpperTorso.Visible ~= false then
+                    Visibility(false)
+                end
+                if game.Players:FindFirstChild(plr.Name) == nil then 
+                    for i, v in pairs(limbs) do
+                        v:Remove()
+                    end
+                    connection:Disconnect()
+                end
+            end
+        end)
+    end
+
+    local function UpdaterR6()
+        local connection
+        connection = game:GetService("RunService").RenderStepped:Connect(function()
+            if plr.Character ~= nil and plr.Character:FindFirstChild("Humanoid") ~= nil and plr.Character:FindFirstChild("HumanoidRootPart") ~= nil and plr.Character.Humanoid.Health > 0 then
+                local HUM, vis = Camera:WorldToViewportPoint(plr.Character.HumanoidRootPart.Position)
+                if vis then
+                    local H = Camera:WorldToViewportPoint(plr.Character.Head.Position)
+                    if limbs.Head_Spine.From ~= Vector2.new(H.X, H.Y) then
+                        local T_Height = plr.Character.Torso.Size.Y/2 - 0.2
+                        local UT = Camera:WorldToViewportPoint((plr.Character.Torso.CFrame * CFrame.new(0, T_Height, 0)).p)
+                        local LT = Camera:WorldToViewportPoint((plr.Character.Torso.CFrame * CFrame.new(0, -T_Height, 0)).p)
+
+                        local LA_Height = plr.Character["Left Arm"].Size.Y/2 - 0.2
+                        local LUA = Camera:WorldToViewportPoint((plr.Character["Left Arm"].CFrame * CFrame.new(0, LA_Height, 0)).p)
+                        local LLA = Camera:WorldToViewportPoint((plr.Character["Left Arm"].CFrame * CFrame.new(0, -LA_Height, 0)).p)
+
+                        local RA_Height = plr.Character["Right Arm"].Size.Y/2 - 0.2
+                        local RUA = Camera:WorldToViewportPoint((plr.Character["Right Arm"].CFrame * CFrame.new(0, RA_Height, 0)).p)
+                        local RLA = Camera:WorldToViewportPoint((plr.Character["Right Arm"].CFrame * CFrame.new(0, -RA_Height, 0)).p)
+
+                        local LL_Height = plr.Character["Left Leg"].Size.Y/2 - 0.2
+                        local LUL = Camera:WorldToViewportPoint((plr.Character["Left Leg"].CFrame * CFrame.new(0, LL_Height, 0)).p)
+                        local LLL = Camera:WorldToViewportPoint((plr.Character["Left Leg"].CFrame * CFrame.new(0, -LL_Height, 0)).p)
+
+                        local RL_Height = plr.Character["Right Leg"].Size.Y/2 - 0.2
+                        local RUL = Camera:WorldToViewportPoint((plr.Character["Right Leg"].CFrame * CFrame.new(0, RL_Height, 0)).p)
+                        local RLL = Camera:WorldToViewportPoint((plr.Character["Right Leg"].CFrame * CFrame.new(0, -RL_Height, 0)).p)
+
+                        -- Head
+                        limbs.Head_Spine.From = Vector2.new(H.X, H.Y)
+                        limbs.Head_Spine.To = Vector2.new(UT.X, UT.Y)
+
+                        --Spine
+                        limbs.Spine.From = Vector2.new(UT.X, UT.Y)
+                        limbs.Spine.To = Vector2.new(LT.X, LT.Y)
+
+                        --Left Arm
+                        limbs.LeftArm.From = Vector2.new(LUA.X, LUA.Y)
+                        limbs.LeftArm.To = Vector2.new(LLA.X, LLA.Y)
+
+                        limbs.LeftArm_UpperTorso.From = Vector2.new(UT.X, UT.Y)
+                        limbs.LeftArm_UpperTorso.To = Vector2.new(LUA.X, LUA.Y)
+
+                        --Right Arm
+                        limbs.RightArm.From = Vector2.new(RUA.X, RUA.Y)
+                        limbs.RightArm.To = Vector2.new(RLA.X, RLA.Y)
+
+                        limbs.RightArm_UpperTorso.From = Vector2.new(UT.X, UT.Y)
+                        limbs.RightArm_UpperTorso.To = Vector2.new(RUA.X, RUA.Y)
+
+                        --Left Leg
+                        limbs.LeftLeg.From = Vector2.new(LUL.X, LUL.Y)
+                        limbs.LeftLeg.To = Vector2.new(LLL.X, LLL.Y)
+
+                        limbs.LeftLeg_LowerTorso.From = Vector2.new(LT.X, LT.Y)
+                        limbs.LeftLeg_LowerTorso.To = Vector2.new(LUL.X, LUL.Y)
+
+                        --Right Leg
+                        limbs.RightLeg.From = Vector2.new(RUL.X, RUL.Y)
+                        limbs.RightLeg.To = Vector2.new(RLL.X, RLL.Y)
+
+                        limbs.RightLeg_LowerTorso.From = Vector2.new(LT.X, LT.Y)
+                        limbs.RightLeg_LowerTorso.To = Vector2.new(RUL.X, RUL.Y)
+                    end
+
+                    if limbs.Head_Spine.Visible ~= true then
+                        Visibility(true)
+                    end
+                else 
+                    if limbs.Head_Spine.Visible ~= false then
+                        Visibility(false)
+                    end
+                end
+            else 
+                if limbs.Head_Spine.Visible ~= false then
+                    Visibility(false)
+                end
+                if game.Players:FindFirstChild(plr.Name) == nil then 
+                    for i, v in pairs(limbs) do
+                        v:Remove()
+                    end
+                    connection:Disconnect()
+                end
+            end
+        end)
+    end
+
+    if R15 then
+        coroutine.wrap(UpdaterR15)()
+    else 
+        coroutine.wrap(UpdaterR6)()
+    end
+end
+
+for i, v in pairs(game:GetService("Players"):GetPlayers()) do
+    if v.Name ~= Player.Name then
+        DrawESP(v)
+    end
+end
+
+game.Players.PlayerAdded:Connect(function(newplr)
+    if newplr.Name ~= Player.Name then
+        DrawESP(newplr)
+    end
+end)
